@@ -14,7 +14,6 @@ This project is currently in development as part of a university assignment.
 | :---: | :---: |
 | <img src="URL_TO_YOUR_HOME_SCREENSHOT" width="300"> | <img src="URL_TO_YOUR_SEARCH_SCREENSHOT" width="300"> |
 
-*(To add images: Upload them to your GitHub repo and replace the `URL_TO_YOUR...` text with the image link.)*
 
 ## ✨ Features
 
@@ -45,7 +44,7 @@ You must have the [Flutter SDK](https://flutter.dev/docs/get-started/install) in
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git)
+    git clone [https://github.com/SanithuM/YOUR_REPOSITORY.git](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git)
     ```
 2.  **Navigate to the project directory:**
     ```bash
