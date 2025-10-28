@@ -44,7 +44,7 @@ You must have the [Flutter SDK](https://flutter.dev/docs/get-started/install) in
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/SanithuM/YOUR_REPOSITORY.git](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git)
+    git clone [https://github.com/SanithuM/HealthMate_Fitness_App.git](https://github.com/SanithuM/HealthMate_Fitness_App.git)
     ```
 2.  **Navigate to the project directory:**
     ```bash
