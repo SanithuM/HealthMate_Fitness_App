@@ -1,13 +1,13 @@
+// main.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
-import 'services/navigation_bar.dart';
+import 'pages/welcome_page.dart';
 
 Future<void> main() async {
-  
   WidgetsFlutterBinding.ensureInitialized();
-
   if (kIsWeb) {
     databaseFactory = databaseFactoryFfiWeb;
   }
@@ -22,7 +22,8 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'HealthMate App',
-      home: NavigationBarTest(),
+      // 3. CHANGE THE HOME PAGE
+      home: WelcomePage(),
     );
   }
 }

@@ -1,0 +1,222 @@
+import 'package:flutter/material.dart';
+import '../database/db_connection.dart';
+import 'login_page.dart';
+import '../services/navigation_bar.dart';  // Your main app page
+
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _dbHelper = DatabaseHelper.instance;
+  bool _isPasswordVisible = false;
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _register() async {
+    final username = _usernameController.text;
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    if (username.isEmpty || email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Please fill all fields'),
+            backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    // Check if email already exists
+    final existingUser = await _dbHelper.getUserByEmail(email);
+    if (existingUser != null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Email already in use.'),
+            backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    // !! SECURITY WARNING: See note below
+    // Create the new user row
+    Map<String, dynamic> row = {
+      'username': username,
+      'email': email,
+      'password': password,
+      'profile_photo': '', // We'll handle this later
+    };
+
+    final id = await _dbHelper.insertUser(row);
+
+    if (id > 0) {
+      // Registration successful
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Registration successful!'),
+            backgroundColor: Colors.green),
+      );
+      // Log them in and go to the main app
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const NavigationBarTest()),
+        (route) => false, // This predicate removes all routes
+      );
+    } else {
+      // Registration failed
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Registration failed. Please try again.'),
+            backgroundColor: Colors.red),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Create Account'),
+        elevation: 0,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // --- Username Field ---
+            _buildTextField(
+              controller: _usernameController,
+              label: 'Username',
+              icon: Icons.person_outline,
+            ),
+            const SizedBox(height: 24),
+
+            // --- Email Field ---
+            _buildTextField(
+              controller: _emailController,
+              label: 'Email',
+              icon: Icons.email_outlined,
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 24),
+
+            // --- Password Field ---
+            _buildTextField(
+              controller: _passwordController,
+              label: 'Password',
+              icon: Icons.lock_outline,
+              obscureText: !_isPasswordVisible,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _isPasswordVisible
+                      ? Icons.visibility_off
+                      : Icons.visibility,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isPasswordVisible = !_isPasswordVisible;
+                  });
+                },
+              ),
+            ),
+            const SizedBox(height: 40),
+
+            // --- Register Button ---
+            ElevatedButton(
+              onPressed: _register,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF5D3EBC),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'Create Account',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // --- Go to Login Page ---
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Already have an account?"),
+                TextButton(
+                  onPressed: () {
+                    // Go to Login, but replace this page
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginPage()),
+                    );
+                  },
+                  child: const Text(
+                    'Login',
+                    style: TextStyle(
+                        color: Color(0xFF5D3EBC),
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper widget for text fields
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool obscureText = false,
+    TextInputType? keyboardType,
+    Widget? suffixIcon,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        suffixIcon: suffixIcon,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: const BorderSide(
+            color: Color(0xFF5D3EBC),
+            width: 2.0,
+          ),
+        ),
+      ),
+    );
+  }
+}
