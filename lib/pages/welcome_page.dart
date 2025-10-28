@@ -18,11 +18,11 @@ class WelcomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // You can add your app logo here
-              const Icon(
-                Icons.favorite,
-                size: 100,
-                color: Color(0xFF5D3EBC), // Your app's purple
+              // Custom App Logo
+               Image.asset(
+                'assets/logos/logo_foreground.png',
+                height: 100,
+              
               ),
               const SizedBox(height: 16),
               const Text(
@@ -55,7 +55,7 @@ class WelcomePage extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF5D3EBC),
+                  backgroundColor: const  Color(0xFF5D3EBC),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -82,7 +82,7 @@ class WelcomePage extends StatelessWidget {
                 },
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFF5D3EBC),
-                  side: const BorderSide(color: Color(0xFF5D3EBC), width: 2),
+                  side: const BorderSide(color:  Color(0xFF5D3EBC), width: 2),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
