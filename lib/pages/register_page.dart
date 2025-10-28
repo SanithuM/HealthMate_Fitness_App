@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../database/db_connection.dart';
 import 'login_page.dart';
-import '../services/navigation_bar.dart';  // Your main app page
+import '../services/navigation_bar.dart';
+import 'package:crypto/crypto.dart'; 
+import 'dart:convert';
+import '../services/user_session.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -29,6 +32,10 @@ class _RegisterPageState extends State<RegisterPage> {
     final username = _usernameController.text;
     final email = _emailController.text;
     final password = _passwordController.text;
+    final bytes = utf8.encode(password); // Convert password to bytes
+    final digest = sha256.convert(bytes); // Hash it
+    final String hashedPassword = digest.toString();
+
 
     if (username.isEmpty || email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -56,13 +63,15 @@ class _RegisterPageState extends State<RegisterPage> {
     Map<String, dynamic> row = {
       'username': username,
       'email': email,
-      'password': password,
+      'password': hashedPassword,
       'profile_photo': '', // We'll handle this later
     };
 
     final id = await _dbHelper.insertUser(row);
+    row['id'] = id; // Get the assigned ID
 
     if (id > 0) {
+      UserSession().currentUser = row;
       // Registration successful
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

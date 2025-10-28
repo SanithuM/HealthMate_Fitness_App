@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../database/db_connection.dart';
 import '../services/add_new_records.dart';
+import '../services/user_session.dart';
+import 'dart:io';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,45 +13,49 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // 3. --- STATE VARIABLES ADDED ---
-  // These will hold the data from the database
+  // State variables for health records
   int _todaySteps = 0;
   int _todayCalories = 0;
   int _todayWater = 0;
   bool _isLoading = true;
 
-  // 4. --- INITSTATE ADDED ---
-  // This function runs once when the widget is first created
+  // State variables for user
+  String _username = 'User';
+  String _profilePicPath = '';
+
   @override
   void initState() {
     super.initState();
-    // Load today's data from the database as soon as the page opens
-    _loadTodaySummary();
+    // Load all data (user + health) when the page first opens
+    _loadAllData();
   }
 
-  // 5. --- NEW FUNCTION: To load data from the database ---
-  Future<void> _loadTodaySummary() async {
-    setState(() {
-      _isLoading = true; // Show loading (optional)
-    });
+  // --- NEW: Combined function to load all data ---
+  Future<void> _loadAllData() async {
+    if (!_isLoading) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
 
+    // 1. Load User Data from session
+    final user = UserSession().currentUser;
+    if (user != null) {
+      _username = user['username'];
+      _profilePicPath = user['profile_photo'] ?? '';
+    }
+
+    // 2. Load Health Data from database
     final dbHelper = DatabaseHelper.instance;
-    // Get today's date in 'YYYY-MM-DD' format
     final String todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-
-    // We fetch *all* records and find today's
-    // A more efficient way would be to add a 'queryByDate' function
-    // in your db_connection.dart, but this works for now.
     final allRecords = await dbHelper.queryAllRecords();
 
-    // Find the record for today
     final todayRecord = allRecords.firstWhere(
       (record) => record['date'] == todayDate,
-      // If no record is found, return an empty map
-      orElse: () => <String, dynamic>{}, 
+      orElse: () => <String, dynamic>{},
     );
 
-    // Update the state with today's data
+    // 3. Update state with all new data
     if (todayRecord.isNotEmpty) {
       setState(() {
         _todaySteps = todayRecord['steps'] ?? 0;
@@ -58,7 +64,7 @@ class _HomePageState extends State<HomePage> {
         _isLoading = false;
       });
     } else {
-      // If no record, set all to 0
+      // If no health record, set to 0 but still load user
       setState(() {
         _todaySteps = 0;
         _todayCalories = 0;
@@ -68,6 +74,8 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // --- REMOVED: _loadTodaySummary() is now part of _loadAllData() ---
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -76,11 +84,9 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 6. --- CONTEXT REMOVED ---
-            // No longer need to pass context to these methods
-            _buildHeader(),
+            _buildHeader(), // Context no longer needed
             const SizedBox(height: 32),
-            _buildGrid(), // 7. --- CONTEXT REMOVED ---
+            _buildGrid(), // Context no longer needed
             const SizedBox(height: 32),
             ClipRRect(
               borderRadius: BorderRadius.circular(20.0),
@@ -97,18 +103,25 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // --- Helper Widget for the Header ---
-  Widget _buildHeader() { // 8. --- CONTEXT REMOVED ---
+  // --- Helper Widget for the Header (UPDATED) ---
+  Widget _buildHeader() {
     return Row(
-      // ... (Header code is unchanged) ...
       children: [
-        const CircleAvatar(
+        // --- UPDATED: The circular avatar ---
+        CircleAvatar(
           radius: 30,
-          backgroundImage: NetworkImage(
-            'https://t4.ftcdn.net/jpg/04/31/64/75/360_F_431647519_usrbQ8Z983hTYe8zgA7t1XVc5fEtqcpa.jpg',
-          ),
+          backgroundColor: Colors.grey.shade200, // Fallback color
+          backgroundImage: _profilePicPath.isNotEmpty
+              ? (_profilePicPath.startsWith('http')
+                  ? NetworkImage(_profilePicPath)
+                  : FileImage(File(_profilePicPath))) as ImageProvider
+              : null,
+          child: _profilePicPath.isEmpty
+              ? const Icon(Icons.person, size: 30, color: Colors.grey)
+              : null,
         ),
         const SizedBox(width: 16),
+        // --- UPDATED: The "Good Morning" text ---
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -116,9 +129,9 @@ class _HomePageState extends State<HomePage> {
               'Good Morning',
               style: TextStyle(color: Colors.grey[700], fontSize: 16),
             ),
-            const Text(
-              'Sanithu',
-              style: TextStyle(
+            Text(
+              _username, // Use state variable, not "Sanithu"
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -141,8 +154,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // --- Helper Widget for the 2x2 Grid ---
-  Widget _buildGrid() { // 9. --- CONTEXT REMOVED ---
+  // --- Helper Widget for the 2x2 Grid (UPDATED) ---
+  Widget _buildGrid() {
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
@@ -150,10 +163,9 @@ class _HomePageState extends State<HomePage> {
       crossAxisSpacing: 16,
       mainAxisSpacing: 16,
       children: [
-        // 10. --- INFOCARDS UPDATED ---
+        // --- InfoCards now use state variables ---
         InfoCard(
           icon: Icons.directions_walk,
-          // Use the state variable, not a hard-coded string
           value: _isLoading ? "..." : _todaySteps.toString(),
           label: 'Steps',
           color: const Color(0xFFE7F7E9),
@@ -162,7 +174,6 @@ class _HomePageState extends State<HomePage> {
         ),
         InfoCard(
           icon: Icons.local_fire_department,
-          // Use the state variable
           value: _isLoading ? "..." : _todayCalories.toString(),
           label: 'Calories Burned',
           color: const Color(0xFFFDE4E6),
@@ -171,7 +182,6 @@ class _HomePageState extends State<HomePage> {
         ),
         InfoCard(
           icon: Icons.water_drop,
-          // Use the state variable and format 'ml' to 'L'
           value: _isLoading ? "..." : '${_todayWater / 1000} L',
           label: 'Water Intake',
           color: const Color(0xFFE4F3FF),
@@ -183,17 +193,16 @@ class _HomePageState extends State<HomePage> {
           label: 'Add New',
           color: const Color(0xFFEAEAEA),
           iconColor: const Color(0xFF3A3A3A),
-          // 11. --- KEY CHANGE: .then() ADDED ---
+          // --- UPDATED: .then() calls _loadAllData ---
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => const AddNewRecordsPage(),
               ),
-              // This code runs *after* the AddNewRecordsPage is "popped"
             ).then((_) {
-              // Re-load the data from the DB to show new values
-              _loadTodaySummary();
+              // Re-load ALL data to refresh cards and header
+              _loadAllData();
             });
           },
         ),

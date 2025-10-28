@@ -1,9 +1,10 @@
-// login_page.dart
-
 import 'package:flutter/material.dart';
 import '../database/db_connection.dart';
 import '../services/navigation_bar.dart'; // Your main app page
 import 'register_page.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
+import '../services/user_session.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -28,6 +29,11 @@ class _LoginPageState extends State<LoginPage> {
   void _login() async {
     final email = _emailController.text;
     final password = _passwordController.text;
+    final bytes = utf8.encode(password);
+    final digest = sha256.convert(bytes);
+    final String hashedPassword = digest.toString();
+
+    
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -39,9 +45,10 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     // !! SECURITY WARNING: See note below
-    final user = await _dbHelper.getUserForLogin(email, password);
+    final user = await _dbHelper.getUserForLogin(email, hashedPassword);
 
     if (user != null) {
+      UserSession().currentUser = user;
       // Login successful
       if (!mounted) return;
       // Navigate to the main app and REMOVE auth pages from back stack

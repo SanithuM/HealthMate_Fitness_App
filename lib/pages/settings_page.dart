@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../services/edit_profile_page.dart';
+import '../services/user_session.dart';
+import 'welcome_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -10,6 +13,20 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   // A state variable to manage the switch's value
   bool _isNotificationsEnabled = true;
+
+  // --- NEW: LOGOUT FUNCTION ---
+  void _logout() {
+    // 1. Clear the session
+    UserSession().logout();
+
+    // 2. Navigate to WelcomePage and remove all other pages
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const WelcomePage()),
+      (route) => false, // This removes everything from the stack
+    );
+  }
+  // ----------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +49,16 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: Icons.person_outline,
             title: 'Edit Profile',
             onTap: () {
-              // Handle "Edit Profile" tap
+              // Navigate to the new page
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const EditProfilePage()),
+              ).then((_) {
+                // This 'then' block runs when we come BACK from EditProfilePage
+                // We call setState to force a redraw, which
+                // will be important for updating the homepage header
+                setState(() {});
+              });
             },
           ),
           _buildSettingsTile(
@@ -59,7 +85,9 @@ class _SettingsPageState extends State<SettingsPage> {
               Icons.notifications_outlined,
               color: Colors.grey[700],
             ),
-            activeThumbColor: const Color(0xFF5D3EBC), // Your app's purple color
+            activeThumbColor: const Color(
+              0xFF5D3EBC,
+            ), // Your app's purple color
           ),
           _buildSettingsTile(
             icon: Icons.language_outlined,
@@ -101,9 +129,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              onPressed: () {
-                // Handle log out
-              },
+              onPressed: _logout,
               child: const Text(
                 'Log Out',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
