@@ -36,6 +36,18 @@ class DatabaseHelper {
         water INTEGER 
       )
     ''');
+
+    // 2. --- NEW: Create the users table ---
+    // We add this table here. Both tables will be created at the same time.
+    await db.execute('''
+      CREATE TABLE users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        profile_photo TEXT
+      )
+    ''');
   }
 
   
@@ -85,6 +97,66 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.delete(
       'health_records',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // ---------------------------------------------
+  // --- NEW: CRUD OPERATIONS for users table ---
+  // ---------------------------------------------
+
+  // C - Create (Register a new user)
+  Future<int> insertUser(Map<String, dynamic> row) async {
+    Database db = await instance.database;
+    return await db.insert('users', row);
+  }
+
+  // R - Read (Check if email already exists)
+  Future<Map<String, dynamic>?> getUserByEmail(String email) async {
+    Database db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'users',
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+    if (maps.isNotEmpty) {
+      return maps.first;
+    }
+    return null;
+  }
+
+  // R - Read (For Login)
+  Future<Map<String, dynamic>?> getUserForLogin(String email, String password) async {
+    Database db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'users',
+      where: 'email = ? AND password = ?',
+      whereArgs: [email, password],
+    );
+    if (maps.isNotEmpty) {
+      return maps.first;
+    }
+    return null;
+  }
+
+  // U - Update (Update user profile info)
+  Future<int> updateUser(Map<String, dynamic> row) async {
+    Database db = await instance.database;
+    int id = row['id'];
+    return await db.update(
+      'users',
+      row,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // D - Delete (Delete a user)
+  Future<int> deleteUser(int id) async {
+    Database db = await instance.database;
+    return await db.delete(
+      'users',
       where: 'id = ?',
       whereArgs: [id],
     );
