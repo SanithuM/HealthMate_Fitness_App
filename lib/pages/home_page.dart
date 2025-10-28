@@ -102,8 +102,8 @@ class HomePage extends StatelessWidget {
           icon: Icons.directions_walk,
           value: '254',
           label: 'Steps',
-          color: const Color(0xFFFEF5D3),
-          iconColor: const Color(0xFFE8B420),
+          color: const Color(0xFFE7F7E9),
+          iconColor: const Color(0xFF3E9D5E),
           onTap: () {}, // Can add navigation later
         ),
         InfoCard(
