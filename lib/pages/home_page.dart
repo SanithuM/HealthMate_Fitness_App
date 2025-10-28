@@ -25,11 +25,11 @@ class HomePage extends StatelessWidget {
 
             ClipRRect(
               borderRadius: BorderRadius.circular(20.0),
-              child: Image.network(
-                'https://marketplace.canva.com/EAFdP358dDw/1/0/1600w/canva-black-white-simple-fitness-tracker-banner-ApQ8Iup1rXw.jpg',
-                height: 200,
+              child: Image.asset(
+                'assets/images/banner.png',
+                height: 150,
                 width: double.infinity,
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
               ),
             ),
           ],
