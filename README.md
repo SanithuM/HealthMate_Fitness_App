@@ -12,7 +12,7 @@ This project is currently in development as part of a university assignment.
 
 | Home Page | Record History |
 | :---: | :---: |
-| <img src="URL_TO_YOUR_HOME_SCREENSHOT" width="300"> | <img src="URL_TO_YOUR_SEARCH_SCREENSHOT" width="300"> |
+| <img src="images/homepage.png" width="300"> | <img src="images/searchpage.png" width="300"> |
 
 
 ## ✨ Features
