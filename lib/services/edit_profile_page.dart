@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../database/db_connection.dart';
-import 'user_session.dart';
+// 1. --- IMPORTS REMOVED/ADDED ---
+// import 'user_session.dart'; // <-- REMOVED this old file
+import 'package:provider/provider.dart'; // <-- ADDED Provider
+import '../providers/user_provider.dart'; // <-- ADDED our UserProvider
+
 import 'dart:io'; // We'll need this for File
 import 'package:image_picker/image_picker.dart'; // For picking images
 import 'package:path_provider/path_provider.dart'; // For saving images
@@ -16,19 +20,22 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   final _dbHelper = DatabaseHelper.instance;
   final _usernameController = TextEditingController();
-  
-  // This will hold the path to the new profile picture
-  String _profilePicPath = ''; 
+
+  String _profilePicPath = '';
   Map<String, dynamic>? _currentUser;
 
   @override
   void initState() {
     super.initState();
+    // 2. --- CHANGED: _loadUserData now reads from Provider ---
+    // We use context.read() here because it's inside initState
+    // and we only want to read the value one time.
+    _currentUser = context.read<UserProvider>().user;
     _loadUserData();
   }
 
   void _loadUserData() {
-    _currentUser = UserSession().currentUser;
+    // _currentUser is already set from initState
     if (_currentUser != null) {
       _usernameController.text = _currentUser!['username'];
       setState(() {
@@ -43,45 +50,40 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.dispose();
   }
 
-  // --- Image Picker Logic ---
+  // --- Image Picker Logic (Unchanged) ---
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
-    // Ask user to pick from Gallery
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      // 1. Get the app's private document directory
       final Directory appDir = await getApplicationDocumentsDirectory();
-      // 2. Create a unique file name
       final String fileName = p.basename(image.path);
-      // 3. Copy the image from the gallery to the app's private directory
       final File newImage = await File(image.path).copy('${appDir.path}/$fileName');
 
-      // 4. Update the state to show the new image
       setState(() {
         _profilePicPath = newImage.path;
       });
     }
   }
 
-  // --- Save Logic ---
+  // --- Save Logic (UPDATED) ---
   void _saveProfile() async {
     if (_currentUser == null) return;
 
     final newUsername = _usernameController.text;
 
-    // Create the updated row map
     Map<String, dynamic> updatedRow = {
-      ..._currentUser!, // Spread existing user data
+      ..._currentUser!,
       'username': newUsername,
       'profile_photo': _profilePicPath,
     };
 
-    // Update the database
+    // 1. Update the database (Unchanged)
     await _dbHelper.updateUser(updatedRow);
 
-    // Update the session
-    UserSession().currentUser = updatedRow;
+    // 2. --- CHANGED: Update the Provider, not the singleton ---
+    // This will notify all widgets watching the provider (like HomePage)
+    context.read<UserProvider>().updateUser(updatedRow);
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -95,6 +97,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    // --- (The entire build method is unchanged) ---
+    // It correctly uses the local state variables _profilePicPath
+    // and _usernameController, which we load in initState.
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Profile'),
@@ -107,19 +112,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            // --- Profile Picture Section ---
             Center(
               child: Stack(
                 children: [
                   CircleAvatar(
                     radius: 60,
-                    // Check if the path is a file or a network image
-                    // This is a simple check, 'http' is for URLs, 'File' is for local
                     backgroundImage: _profilePicPath.isNotEmpty
                         ? (_profilePicPath.startsWith('http')
                             ? NetworkImage(_profilePicPath)
                             : FileImage(File(_profilePicPath))) as ImageProvider
-                        : null, // Fallback
+                        : null,
                     child: _profilePicPath.isEmpty
                         ? const Icon(Icons.person, size: 60, color: Colors.grey)
                         : null,
@@ -130,7 +132,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     child: CircleAvatar(
                       backgroundColor: const Color(0xFF5D3EBC),
                       child: IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.white, size: 20),
+                        icon: const Icon(Icons.edit,
+                            color: Colors.white, size: 20),
                         onPressed: _pickImage,
                       ),
                     ),
@@ -139,19 +142,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
             ),
             const SizedBox(height: 32),
-
-            // --- Username Field ---
             TextField(
               controller: _usernameController,
               decoration: InputDecoration(
                 labelText: 'Username',
                 prefixIcon: const Icon(Icons.person_outline),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),
             const SizedBox(height: 40),
-
-            // --- Save Button ---
             ElevatedButton(
               onPressed: _saveProfile,
               style: ElevatedButton.styleFrom(
@@ -162,7 +162,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text('Save Changes', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: const Text('Save Changes',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ],
         ),

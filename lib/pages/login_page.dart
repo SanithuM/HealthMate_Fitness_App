@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../database/db_connection.dart';
-import '../services/navigation_bar.dart'; // Your main app page
+// Your main app page
 import 'register_page.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -34,8 +34,6 @@ class _LoginPageState extends State<LoginPage> {
     final digest = sha256.convert(bytes);
     final String hashedPassword = digest.toString();
 
-    
-
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -45,14 +43,26 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    // !! SECURITY WARNING: See note below
     final user = await _dbHelper.getUserForLogin(email, hashedPassword);
 
+    // --- 1. ADD THIS 'mounted' CHECK ---
+    // After an 'await', you must check if the widget is still on screen
+    if (!mounted) return;
+
     if (user != null) {
+      // 1. Tell the provider you are logged in
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Login successful!'),
+            backgroundColor: Colors.green),
+      );
       context.read<UserProvider>().login(user);
+
+      // --- 2. ADD THIS NAVIGATOR.POP ---
+      // 2. Close the login page
+      Navigator.pop(context);
     } else {
       // Login failed
-      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Invalid email or password'),

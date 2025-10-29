@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../database/db_connection.dart';
 import 'login_page.dart';
-import '../services/navigation_bar.dart';
-import 'package:crypto/crypto.dart'; 
+import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
@@ -37,7 +36,6 @@ class _RegisterPageState extends State<RegisterPage> {
     final digest = sha256.convert(bytes); // Hash it
     final String hashedPassword = digest.toString();
 
-
     if (username.isEmpty || email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -49,8 +47,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
     // Check if email already exists
     final existingUser = await _dbHelper.getUserByEmail(email);
+
+    // --- 1. ADD THIS 'mounted' CHECK ---
+    if (!mounted) return;
+
     if (existingUser != null) {
-      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Email already in use.'),
@@ -59,7 +60,6 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    // !! SECURITY WARNING: See note below
     // Create the new user row
     Map<String, dynamic> row = {
       'username': username,
@@ -71,12 +71,23 @@ class _RegisterPageState extends State<RegisterPage> {
     final id = await _dbHelper.insertUser(row);
     row['id'] = id; // Get the assigned ID
 
+    // --- 2. ADD THIS 'mounted' CHECK ---
+    if (!mounted) return;
+
     if (id > 0) {
+      // 1. Tell the provider you are logged in
+       ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Registration successful!'),
+            backgroundColor: Colors.green),
+      );
       context.read<UserProvider>().login(row);
-      
+
+      // --- 3. ADD THIS NAVIGATOR.POP ---
+      // 2. Close the register page
+      Navigator.pop(context);
     } else {
       // Registration failed
-      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Registration failed. Please try again.'),

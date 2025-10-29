@@ -14,12 +14,47 @@ class _SettingsPageState extends State<SettingsPage> {
   // A state variable to manage the switch's value
   bool _isNotificationsEnabled = true;
 
-  // --- NEW: LOGOUT FUNCTION ---
-  void _logout() {
+  // --- 1. Renamed your original function ---
+  // This is the actual logout logic
+  void _performLogout() {
+    // This call notifies the AuthWrapper, which handles the redirect
     context.read<UserProvider>().logout();
-    // After logout, you might want to navigate to the welcome/login page
   }
-  // ----------------------------
+
+  // --- 2. NEW: Function to show the confirmation dialog ---
+  Future<void> _showLogoutConfirmation() async {
+    // showDialog returns a value (true/false) when popped
+    final bool? confirm = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Log Out?'),
+        content: const Text('Are you sure you want to log out?'),
+        actions: [
+          // "No" button
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, false); // Return 'false'
+            },
+            child: const Text('No'),
+          ),
+          // "Yes" button
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, true); // Return 'true'
+            },
+            child: const Text('Yes', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    // 3. Check the result from the dialog
+    // We also check 'mounted' to be safe
+    if (confirm == true && mounted) {
+      _performLogout(); // Only log out if user pressed "Yes"
+    }
+  }
+  // ----------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +113,8 @@ class _SettingsPageState extends State<SettingsPage> {
               Icons.notifications_outlined,
               color: Colors.grey[700],
             ),
-            activeThumbColor: const Color(
+            // --- FIXED: Changed activeThumbColor to activeColor ---
+            activeColor: const Color(
               0xFF5D3EBC,
             ), // Your app's purple color
           ),
@@ -122,7 +158,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              onPressed: _logout,
+              // --- 4. UPDATED: Call the new dialog function ---
+              onPressed: _showLogoutConfirmation,
               child: const Text(
                 'Log Out',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

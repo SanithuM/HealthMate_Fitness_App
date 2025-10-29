@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../database/db_connection.dart';
 import '../services/add_new_records.dart';
-import '../services/user_session.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
+// 2. --- IMPORT REMOVED ---
+// import '../services/user_session.dart'; // No longer needed
 import 'dart:io';
 
 class HomePage extends StatefulWidget {
@@ -19,33 +22,30 @@ class _HomePageState extends State<HomePage> {
   int _todayWater = 0;
   bool _isLoading = true;
 
-  // State variables for user
-  String _username = 'User';
-  String _profilePicPath = '';
+  // 3. --- STATE VARIABLES REMOVED ---
+  // We no longer need these! The UserProvider will store them.
+  // String _username = 'User';
+  // String _profilePicPath = '';
 
   @override
   void initState() {
     super.initState();
-    // Load all data (user + health) when the page first opens
-    _loadAllData();
+    // 4. --- SIMPLIFIED: Just load health data ---
+    // The user data will be handled by the 'build' method
+    _loadTodaySummary();
   }
 
-  // --- NEW: Combined function to load all data ---
-  Future<void> _loadAllData() async {
+  // 5. --- RENAMED & SIMPLIFIED: ---
+  // This function ONLY loads health data now.
+  Future<void> _loadTodaySummary() async {
+    // Show loading (optional)
     if (!_isLoading) {
       setState(() {
         _isLoading = true;
       });
     }
 
-    // 1. Load User Data from session
-    final user = UserSession().currentUser;
-    if (user != null) {
-      _username = user['username'];
-      _profilePicPath = user['profile_photo'] ?? '';
-    }
-
-    // 2. Load Health Data from database
+    // 1. Load Health Data from database
     final dbHelper = DatabaseHelper.instance;
     final String todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
     final allRecords = await dbHelper.queryAllRecords();
@@ -55,7 +55,10 @@ class _HomePageState extends State<HomePage> {
       orElse: () => <String, dynamic>{},
     );
 
-    // 3. Update state with all new data
+    // 2. Update state with all new data
+    // We check 'mounted' just in case
+    if (!mounted) return;
+    
     if (todayRecord.isNotEmpty) {
       setState(() {
         _todaySteps = todayRecord['steps'] ?? 0;
@@ -64,7 +67,7 @@ class _HomePageState extends State<HomePage> {
         _isLoading = false;
       });
     } else {
-      // If no health record, set to 0 but still load user
+      // If no health record, set to 0
       setState(() {
         _todaySteps = 0;
         _todayCalories = 0;
@@ -74,19 +77,29 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // --- REMOVED: _loadTodaySummary() is now part of _loadAllData() ---
-
   @override
   Widget build(BuildContext context) {
+    // 6. --- GET USER DATA FROM PROVIDER ---
+    // This line "watches" the provider. If the user data changes,
+    // this 'build' method will automatically re-run.
+    final user = context.watch<UserProvider>().user;
+
+    // Get the username and photo path, providing default values
+    final String username = user?['username'] ?? 'User';
+    final String profilePicPath = user?['profile_photo'] ?? '';
+    // ----------------------------------------
+
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(), // Context no longer needed
+            // 7. --- PASS DATA TO HEADER ---
+            // We pass the user data down to the header widget
+            _buildHeader(username, profilePicPath),
             const SizedBox(height: 32),
-            _buildGrid(), // Context no longer needed
+            _buildGrid(),
             const SizedBox(height: 32),
             ClipRRect(
               borderRadius: BorderRadius.circular(20.0),
@@ -104,19 +117,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   // --- Helper Widget for the Header (UPDATED) ---
-  Widget _buildHeader() {
+  Widget _buildHeader(String username, String profilePicPath) {
     return Row(
       children: [
         // --- UPDATED: The circular avatar ---
         CircleAvatar(
           radius: 30,
           backgroundColor: Colors.grey.shade200, // Fallback color
-          backgroundImage: _profilePicPath.isNotEmpty
-              ? (_profilePicPath.startsWith('http')
-                  ? NetworkImage(_profilePicPath)
-                  : FileImage(File(_profilePicPath))) as ImageProvider
+          backgroundImage: profilePicPath.isNotEmpty
+              ? (profilePicPath.startsWith('http')
+                  ? NetworkImage(profilePicPath)
+                  : FileImage(File(profilePicPath))) as ImageProvider
               : null,
-          child: _profilePicPath.isEmpty
+          child: profilePicPath.isEmpty
               ? const Icon(Icons.person, size: 30, color: Colors.grey)
               : null,
         ),
@@ -130,7 +143,7 @@ class _HomePageState extends State<HomePage> {
               style: TextStyle(color: Colors.grey[700], fontSize: 16),
             ),
             Text(
-              _username, // Use state variable, not "Sanithu"
+              username, // Use the 'username' variable
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 24,
@@ -163,7 +176,7 @@ class _HomePageState extends State<HomePage> {
       crossAxisSpacing: 16,
       mainAxisSpacing: 16,
       children: [
-        // --- InfoCards now use state variables ---
+        // --- InfoCards (Unchanged, but now work) ---
         InfoCard(
           icon: Icons.directions_walk,
           value: _isLoading ? "..." : _todaySteps.toString(),
@@ -193,7 +206,7 @@ class _HomePageState extends State<HomePage> {
           label: 'Add New',
           color: const Color(0xFFEAEAEA),
           iconColor: const Color(0xFF3A3A3A),
-          // --- UPDATED: .then() calls _loadAllData ---
+          // --- UPDATED: .then() calls _loadTodaySummary ---
           onTap: () {
             Navigator.push(
               context,
@@ -201,8 +214,8 @@ class _HomePageState extends State<HomePage> {
                 builder: (context) => const AddNewRecordsPage(),
               ),
             ).then((_) {
-              // Re-load ALL data to refresh cards and header
-              _loadAllData();
+              // Re-load ONLY health data to refresh cards
+              _loadTodaySummary();
             });
           },
         ),
