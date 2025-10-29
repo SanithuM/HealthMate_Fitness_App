@@ -4,7 +4,8 @@ import '../services/navigation_bar.dart'; // Your main app page
 import 'register_page.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
-import '../services/user_session.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -48,15 +49,7 @@ class _LoginPageState extends State<LoginPage> {
     final user = await _dbHelper.getUserForLogin(email, hashedPassword);
 
     if (user != null) {
-      UserSession().currentUser = user;
-      // Login successful
-      if (!mounted) return;
-      // Navigate to the main app and REMOVE auth pages from back stack
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const NavigationBarTest()),
-        (route) => false, // This predicate removes all routes
-      );
+      context.read<UserProvider>().login(user);
     } else {
       // Login failed
       if (!mounted) return;

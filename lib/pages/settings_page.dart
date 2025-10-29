@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/edit_profile_page.dart';
-import '../services/user_session.dart';
-import 'welcome_page.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -16,15 +16,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   // --- NEW: LOGOUT FUNCTION ---
   void _logout() {
-    // 1. Clear the session
-    UserSession().logout();
-
-    // 2. Navigate to WelcomePage and remove all other pages
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const WelcomePage()),
-      (route) => false, // This removes everything from the stack
-    );
+    context.read<UserProvider>().logout();
+    // After logout, you might want to navigate to the welcome/login page
   }
   // ----------------------------
 

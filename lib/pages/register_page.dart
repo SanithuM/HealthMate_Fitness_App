@@ -4,7 +4,8 @@ import 'login_page.dart';
 import '../services/navigation_bar.dart';
 import 'package:crypto/crypto.dart'; 
 import 'dart:convert';
-import '../services/user_session.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -71,20 +72,8 @@ class _RegisterPageState extends State<RegisterPage> {
     row['id'] = id; // Get the assigned ID
 
     if (id > 0) {
-      UserSession().currentUser = row;
-      // Registration successful
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Registration successful!'),
-            backgroundColor: Colors.green),
-      );
-      // Log them in and go to the main app
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const NavigationBarTest()),
-        (route) => false, // This predicate removes all routes
-      );
+      context.read<UserProvider>().login(row);
+      
     } else {
       // Registration failed
       if (!mounted) return;

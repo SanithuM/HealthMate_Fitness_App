@@ -1,17 +1,28 @@
-// main.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
-import 'pages/welcome_page.dart';
+
+import 'package:provider/provider.dart';
+import 'providers/user_provider.dart';
+import 'auth_wrapper.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
     databaseFactory = databaseFactoryFfiWeb;
   }
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        // This makes UserProvider available to the entire app
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        // We will add HealthProvider here later
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -22,8 +33,8 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'HealthMate App',
-      // 3. CHANGE THE HOME PAGE
-      home: WelcomePage(),
+      // Wrapper will decide to show welcome page or home page
+      home: AuthWrapper(),
     );
   }
 }
