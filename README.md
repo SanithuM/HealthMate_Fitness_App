@@ -46,6 +46,13 @@ This project follows a feature-based folder structure to keep the code organized
 
 ```
 📦lib
+ ┣ 📂assets
+ ┃ ┣ 📂images
+ ┃ ┃ ┗ 📜banner.png
+ ┃ ┗ 📂logos
+ ┃ ┃ ┣ 📜logo.png
+ ┃ ┃ ┣ 📜logo_background.png
+ ┃ ┃ ┗ 📜logo_foreground.png
  ┣ 📂database
  ┃ ┗ 📜db_connection.dart
  ┣ 📂pages
