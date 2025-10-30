@@ -114,7 +114,7 @@ class _SettingsPageState extends State<SettingsPage> {
               color: Colors.grey[700],
             ),
             // --- FIXED: Changed activeThumbColor to activeColor ---
-            activeColor: const Color(
+            activeThumbColor: const Color(
               0xFF5D3EBC,
             ), // Your app's purple color
           ),

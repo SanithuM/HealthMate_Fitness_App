@@ -44,6 +44,25 @@ This project is currently in development as part of a university assignment, foc
 
 This project follows a feature-based folder structure to keep the code organized and scalable.
 
+📦lib
+ ┣ 📂database
+ ┃ ┗ 📜db_connection.dart
+ ┣ 📂pages
+ ┃ ┣ 📜home_page.dart
+ ┃ ┣ 📜login_page.dart
+ ┃ ┣ 📜register_page.dart
+ ┃ ┣ 📜search_page.dart
+ ┃ ┣ 📜settings_page.dart
+ ┃ ┗ 📜welcome_page.dart
+ ┣ 📂providers
+ ┃ ┗ 📜user_provider.dart
+ ┣ 📂services
+ ┃ ┣ 📜add_new_records.dart
+ ┃ ┣ 📜edit_profile_page.dart
+ ┃ ┗ 📜navigation_bar.dart
+ ┣ 📜auth_wrapper.dart
+ ┗ 📜main.dart
+
 
 ## 🚀 Getting Started
 
