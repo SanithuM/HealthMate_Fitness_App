@@ -1,36 +1,49 @@
 # HealthMate - Fitness Tracker App
 
-![WIP](https://img.shields.io/badge/Status-Work%20In%20Progress-yellow)
+![WIP](https://img.shields.io/badge/Status-In%20Development-yellow)
+![Flutter](https://img.shields.io/badge/Flutter-3.x-blue?logo=flutter)
+![State Management](https://img.shields.io/badge/State-Provider-blueviolet?logo=flutter)
 
-A mobile fitness and health tracking application built with Flutter. This app allows users to monitor their daily activity, including steps, calories burned, and water intake. All data is stored locally on the device using an `sqflite` database.
+A mobile fitness and health tracking application built with Flutter. This app allows users to create an account, log in, and monitor their daily activity, including steps, calories burned, and water intake. All user and health data is stored locally on the device using an `sqflite` database.
 
-This project is currently in development as part of a university assignment.
+This project is currently in development as part of a university assignment, focusing on local database management and feature-based architecture.
 
 ## 📱 Screenshots
 
 *Screenshots will be updated as development progresses.*
 
-| Home Page | Record History |
-| :---: | :---: |
-| <img src="images/homepage.png" width="300"> | <img src="images/searchpage.png" width="300"> |
+| Welcome Screen | Home Page | Record History |
+| :---: | :---: | :---: |
+| <img src="images/homepage.png" width="250"> | <img src="images/searchpage.png" width="250"> | <img src="images/homepage.png" width="250"> |
 
 
 ## ✨ Features
 
-- **Track Daily Metrics:** Log steps, calories burned, and water intake (in ml).
-- **Local Database:** All data is stored locally on the device using `sqflite`.
+- **User Authentication:** Full login and registration system with hashed passwords.
+- **Profile Management:** Users can edit their username and profile picture.
+- **Daily Tracking:** Log steps, calories, and water intake for each day.
+- **One Record Per Day:** Automatically opens today's record to **update** if it exists, or creates a **new** one if it doesn't.
+- **Local Database:** All user and health data is stored locally using `sqflite`.
 - **Full CRUD Operations:** Complete functionality to Create, Read, Update, and Delete health records.
-- **Record History:** A "Record History" page to view all past entries.
-- **Search & Filter:** Search for specific records by date.
-- **Edit & Delete:** Easily edit or delete any past record from the history page.
+- **Record History:** A "Record History" page to view, edit, or delete all past entries.
+- **Search:** Filter the record history by date.
+- **State Management:** Uses the **Provider** package to manage user authentication state across the app.
 
 ## 🛠️ Tech Stack
 
 - **Framework:** [Flutter](https://flutter.dev/)
 - **Language:** [Dart](https://dart.dev/)
+- **State Management:** [Provider](https://pub.dev/packages/provider)
 - **Local Database:** [sqflite](https://pub.dev/packages/sqflite)
+- **Image Picking:** [image_picker](https://pub.dev/packages/image_picker)
+- **File System:** [path_provider](https://pub.dev/packages/path_provider) & [path](https://pub.dev/packages/path)
+- **Cryptography:** [crypto](https://pub.dev/packages/crypto) (for SHA-256 password hashing)
 - **Date Formatting:** [intl](https://pub.dev/packages/intl)
-- **Database Path:** [path](https://pub.dev/packages/path)
+
+## 📁 Project Structure
+
+This project follows a feature-based folder structure to keep the code organized and scalable.
+
 
 ## 🚀 Getting Started
 
@@ -58,15 +71,4 @@ You must have the [Flutter SDK](https://flutter.dev/docs/get-started/install) in
     ```bash
     flutter run
     ```
-
-## ⚠️ Project Status
-
-This project is **currently in development**. The core functionality (CRUD operations for health records) is complete and functional on mobile (Android/iOS) virtual devices.
-
-### Future Plans
-
-- [ ] Finalize the "Saved" page functionality.
-- [ ] Complete the "Settings" page UI and logic.
-- [ ] Add data visualization (charts/graphs) to the Home Page.
-
----
+    (This project is configured for **Android & iOS** virtual devices. Web setup is not currently supported.)
