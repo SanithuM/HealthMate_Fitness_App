@@ -12,9 +12,9 @@ This project is currently in development as part of a university assignment, foc
 
 *Screenshots will be updated as development progresses.*
 
-| Welcome Screen | Home Page | Record History | Setting Page |
+| Welcome Screen | Home Page | Record History | Settings Page |
 | :---: | :---: | :---: | :---: |
-| <img src="images/welcomepage.png" width="250"> | <img src="images/searchpage.png" width="250"> | <img src="images/homepage.png" width="250"> | <img src="images/settingspage.png" width="250"> |
+| <img src="images/welcomepage.png" width="200"> | <img src="images/searchpage.png" width="200"> | <img src="images/homepage.png" width="200"> | <img src="images/settingspage.png" width="200"> |
 
 
 ## ✨ Features
