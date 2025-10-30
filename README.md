@@ -14,7 +14,7 @@ This project is currently in development as part of a university assignment, foc
 
 | Welcome Screen | Home Page | Record History | Settings Page |
 | :---: | :---: | :---: | :---: |
-| <img src="images/welcomepage.png" width="200"> | <img src="images/searchpage.png" width="200"> | <img src="images/homepage.png" width="200"> | <img src="images/settingspage.png" width="200"> |
+| <img src="images/welcomepage.png" width="200"> | <img src="images/homepage.png" width="200"> | <img src="images/searchpage.png" width="200"> | <img src="images/settingspage.png" width="200"> |
 
 
 ## ✨ Features
