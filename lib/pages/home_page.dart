@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import '../database/db_connection.dart'; // Database helper
 import '../services/add_new_records.dart'; // Add/Update page
 import 'package:provider/provider.dart'; // Provider package
-import '../providers/user_provider.dart'; // Your UserProvider
+import '../providers/user_provider.dart'; // UserProvider
 import 'dart:io'; // For File image
 
 class HomePage extends StatefulWidget {
