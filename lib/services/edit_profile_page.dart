@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import '../database/db_connection.dart';
-// 1. --- IMPORTS REMOVED/ADDED ---
-// import 'user_session.dart'; // <-- REMOVED this old file
-import 'package:provider/provider.dart'; // <-- ADDED Provider
-import '../providers/user_provider.dart'; // <-- ADDED our UserProvider
-
-import 'dart:io'; // We'll need this for File
+import 'package:provider/provider.dart'; 
+import '../providers/user_provider.dart'; 
+import 'dart:io';
 import 'package:image_picker/image_picker.dart'; // For picking images
 import 'package:path_provider/path_provider.dart'; // For saving images
 import 'package:path/path.dart' as p; // For joining paths
@@ -27,9 +24,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    // 2. --- CHANGED: _loadUserData now reads from Provider ---
-    // We use context.read() here because it's inside initState
-    // and we only want to read the value one time.
+    // 2. --- _loadUserData now reads from Provider ---
     _currentUser = context.read<UserProvider>().user;
     _loadUserData();
   }
@@ -50,7 +45,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.dispose();
   }
 
-  // --- Image Picker Logic (Unchanged) ---
+  // --- Image Picker Logic ---
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
@@ -66,7 +61,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
-  // --- Save Logic (UPDATED) ---
+  // --- Save Logic ---
   void _saveProfile() async {
     if (_currentUser == null) return;
 
@@ -78,11 +73,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
       'profile_photo': _profilePicPath,
     };
 
-    // 1. Update the database (Unchanged)
+    // 1. Update the database
     await _dbHelper.updateUser(updatedRow);
 
-    // 2. --- CHANGED: Update the Provider, not the singleton ---
-    // This will notify all widgets watching the provider (like HomePage)
+    // 2. --- Update the Provider ---
     context.read<UserProvider>().updateUser(updatedRow);
 
     if (!mounted) return;
@@ -97,9 +91,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    // --- (The entire build method is unchanged) ---
-    // It correctly uses the local state variables _profilePicPath
-    // and _usernameController, which we load in initState.
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Profile'),

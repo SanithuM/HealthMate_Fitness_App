@@ -48,7 +48,7 @@ class _RegisterPageState extends State<RegisterPage> {
     // Check if email already exists
     final existingUser = await _dbHelper.getUserByEmail(email);
 
-    // --- 1. ADD THIS 'mounted' CHECK ---
+    // --- ADD THIS 'mounted' CHECK ---
     if (!mounted) return;
 
     if (existingUser != null) {
@@ -65,13 +65,13 @@ class _RegisterPageState extends State<RegisterPage> {
       'username': username,
       'email': email,
       'password': hashedPassword,
-      'profile_photo': '', // We'll handle this later
+      'profile_photo': '',
     };
 
     final id = await _dbHelper.insertUser(row);
     row['id'] = id; // Get the assigned ID
 
-    // --- 2. ADD THIS 'mounted' CHECK ---
+    // --- ADD THIS 'mounted' CHECK ---
     if (!mounted) return;
 
     if (id > 0) {

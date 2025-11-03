@@ -1,5 +1,3 @@
-// welcome_page.dart
-
 import 'package:flutter/material.dart';
 import 'login_page.dart';
 import 'register_page.dart';
@@ -20,7 +18,7 @@ class WelcomePage extends StatelessWidget {
             children: [
               // Custom App Logo
                Image.asset(
-                'assets/logos/logo_foreground.png',
+                'lib/assets/logos/logo_foreground.png',
                 height: 100,
               
               ),

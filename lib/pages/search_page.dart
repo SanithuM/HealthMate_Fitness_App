@@ -11,7 +11,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  // 2. --- STATE VARIABLES ---
+  // --- STATE VARIABLES ---
   final SearchController _searchController = SearchController();
   // Master list of all records from the DB
   List<Map<String, dynamic>> _allRecords = [];
@@ -19,7 +19,7 @@ class _SearchPageState extends State<SearchPage> {
   List<Map<String, dynamic>> _filteredHistory = [];
   bool _isLoading = true;
 
-  // 3. --- DATABASE FUNCTIONS ---
+  // --- DATABASE FUNCTIONS ---
   @override
   void initState() {
     super.initState();
@@ -57,7 +57,7 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  // 4. --- NAVIGATION & ACTIONS ---
+  // --- NAVIGATION & ACTIONS ---
 
   // Opens the date picker to help with searching
   Future<void> _selectDate() async {
@@ -123,18 +123,17 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  // 5. --- DISPOSE ---
+  // --- DISPOSE ---
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
 
-  // 6. --- BUILD METHOD ---
+  // --- BUILD METHOD ---
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // We keep the AppBar as you had it
       appBar: AppBar(
         title: const Text('Record History'),
         backgroundColor: Colors.white,
@@ -154,7 +153,6 @@ class _SearchPageState extends State<SearchPage> {
                     hintText: 'Search by date (YYYY-MM-DD)',
                     // Call _filterRecords every time the text changes
                     onChanged: _filterRecords,
-                    // Add icons for clearing and picking a date
                     trailing: [
                       IconButton(
                         icon: const Icon(Icons.calendar_today),
@@ -192,7 +190,7 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  // 7. --- HELPER WIDGET for the list item ---
+  // --- HELPER WIDGET for the list item ---
   Widget _buildRecordCard(Map<String, dynamic> record) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),

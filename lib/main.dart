@@ -17,7 +17,6 @@ Future<void> main() async {
       providers: [
         // This makes UserProvider available to the entire app
         ChangeNotifierProvider(create: (_) => UserProvider()),
-        // We will add HealthProvider here later
       ],
       child: const MyApp(),
     ),

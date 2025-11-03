@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/user_provider.dart';
 import 'pages/welcome_page.dart';
-import 'services/navigation_bar.dart'; // Your main app page
+import 'services/navigation_bar.dart'; // main app page
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});

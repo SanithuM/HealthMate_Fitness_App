@@ -14,14 +14,14 @@ class _SettingsPageState extends State<SettingsPage> {
   // A state variable to manage the switch's value
   bool _isNotificationsEnabled = true;
 
-  // --- 1. Renamed your original function ---
-  // This is the actual logout logic
+  // --- Logout Confirmation Dialog Logic ---
+  // The actual logout logic
   void _performLogout() {
     // This call notifies the AuthWrapper, which handles the redirect
     context.read<UserProvider>().logout();
   }
 
-  // --- 2. NEW: Function to show the confirmation dialog ---
+  // --- Function to show the confirmation dialog ---
   Future<void> _showLogoutConfirmation() async {
     // showDialog returns a value (true/false) when popped
     final bool? confirm = await showDialog(
@@ -48,18 +48,18 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
 
-    // 3. Check the result from the dialog
-    // We also check 'mounted' to be safe
+    // Check the result from the dialog
+    // check 'mounted' to be safe
     if (confirm == true && mounted) {
       _performLogout(); // Only log out if user pressed "Yes"
     }
   }
-  // ----------------------------------------------------
+  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // We add an AppBar for a nice title at the top
+      // Add an AppBar for a nice title at the top
       appBar: AppBar(
         title: const Text('Settings'),
         // This makes the app bar use the scaffold's background color
@@ -83,8 +83,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 MaterialPageRoute(builder: (context) => const EditProfilePage()),
               ).then((_) {
                 // This 'then' block runs when we come BACK from EditProfilePage
-                // We call setState to force a redraw, which
-                // will be important for updating the homepage header
+                //  this is the setState to force a redraw, which will show updated info
                 setState(() {});
               });
             },
@@ -113,10 +112,9 @@ class _SettingsPageState extends State<SettingsPage> {
               Icons.notifications_outlined,
               color: Colors.grey[700],
             ),
-            // --- FIXED: Changed activeThumbColor to activeColor ---
             activeThumbColor: const Color(
               0xFF5D3EBC,
-            ), // Your app's purple color
+            ),
           ),
           _buildSettingsTile(
             icon: Icons.language_outlined,
@@ -158,7 +156,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              // --- 4. UPDATED: Call the new dialog function ---
+              // --- Call the new dialog function ---
               onPressed: _showLogoutConfirmation,
               child: const Text(
                 'Log Out',

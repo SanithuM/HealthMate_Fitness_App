@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../database/db_connection.dart';
-// Your main app page
 import 'register_page.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -45,8 +44,7 @@ class _LoginPageState extends State<LoginPage> {
 
     final user = await _dbHelper.getUserForLogin(email, hashedPassword);
 
-    // --- 1. ADD THIS 'mounted' CHECK ---
-    // After an 'await', you must check if the widget is still on screen
+    // --- ADD THIS 'mounted' CHECK ---
     if (!mounted) return;
 
     if (user != null) {
@@ -58,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
       );
       context.read<UserProvider>().login(user);
 
-      // --- 2. ADD THIS NAVIGATOR.POP ---
+      // --- ADD THIS NAVIGATOR.POP ---
       // 2. Close the login page
       Navigator.pop(context);
     } else {

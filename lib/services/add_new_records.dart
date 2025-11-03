@@ -68,7 +68,7 @@ class _AddNewRecordsPageState extends State<AddNewRecordsPage> {
       return; 
     }
 
-    // --- ADDED: try...catch block for database operations ---
+    // Try...catch block for database operations ---
     try {
       if (_isUpdateMode) {
         // --- Handle UPDATE ---
@@ -128,7 +128,7 @@ class _AddNewRecordsPageState extends State<AddNewRecordsPage> {
     }
   }
 
-  // 6. --- BUILD METHOD ---
+  // --- BUILD METHOD ---
   @override
   Widget build(BuildContext context) {
     return Scaffold(

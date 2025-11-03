@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
             ClipRRect(
               borderRadius: BorderRadius.circular(20.0),
               child: Image.asset(
-                'assets/images/banner.png', // Make sure this path is correct
+                'lib/assets/images/banner.png',
                 height: 150,
                 width: double.infinity,
                 fit: BoxFit.fill,
@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage> {
             size: 28,
           ),
           onPressed: () {
-            // TODO: Handle notification tap
+            // future notification functionality
           },
         ),
       ],

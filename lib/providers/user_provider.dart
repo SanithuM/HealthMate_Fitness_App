@@ -7,21 +7,20 @@ class UserProvider with ChangeNotifier {
   // This is a "getter" that other widgets can use to read the user data
   Map<String, dynamic>? get user => _currentUser;
 
-  // This is how you log a user in
+  // This is for the log a user in
   void login(Map<String, dynamic> user) {
     _currentUser = user;
-    // This is the most important part:
-    // It tells all listening widgets to rebuild.
+    // This tells all listening widgets to rebuild.
     notifyListeners();
   }
 
-  // This is how you update the user (e.g., after editing profile)
+  // This is for updating the user's information
   void updateUser(Map<String, dynamic> updatedUser) {
     _currentUser = updatedUser;
     notifyListeners();
   }
 
-  // This is how you log out
+  // log out
   void logout() {
     _currentUser = null;
     notifyListeners();
