@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -47,9 +48,39 @@ class DatabaseHelper {
         profile_photo TEXT
       )
     ''');
-    // Dummy data insertion is commented out/removed as requested
+    // Dummy data for testing
+    await _insertDummyRecords(db);
   }
 
+  // Insert some dummy health records for testing
+  Future<void> _insertDummyRecords(Database db) async {
+    // Helper to get formatted dates
+    String yesterday =
+        DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 1)));
+    String twoDaysAgo =
+        DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 2)));
+
+    // A batch operation is more efficient for multiple inserts
+    Batch batch = db.batch();
+
+    // Dummy Record 1
+    batch.insert('health_records', {
+      'date': yesterday,
+      'steps': 5280,
+      'calories': 310,
+      'water': 2000, 
+    });
+
+    // Dummy Record 2
+    batch.insert('health_records', {
+      'date': twoDaysAgo,
+      'steps': 8123,
+      'calories': 450,
+      'water': 2500, 
+    });
+
+    await batch.commit(noResult: true); // Commit the batch
+  }
   // --- CRUD OPERATIONS for health_records ---
 
   // C - Create (Insert)
