@@ -48,9 +48,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // --- Image Picker Logic ---
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
+    // Let user pick an image from gallery
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
+      // Save the picked image to app directory
       final Directory appDir = await getApplicationDocumentsDirectory();
       final String fileName = p.basename(image.path);
       final File newImage = await File(image.path).copy('${appDir.path}/$fileName');

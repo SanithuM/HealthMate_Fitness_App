@@ -64,7 +64,7 @@ class _RegisterPageState extends State<RegisterPage> {
     Map<String, dynamic> row = {
       'username': username,
       'email': email,
-      'password': hashedPassword,
+      'password': hashedPassword, // Store hashed password
       'profile_photo': '',
     };
 
