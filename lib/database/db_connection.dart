@@ -95,13 +95,12 @@ class DatabaseHelper {
     return await db.query('health_records', orderBy: 'date DESC');
   }
 
-  // R - Read (Query Single Record by ID - Corrected)
-  // Was mistakenly searching by date before
+  // R - Read
   Future<Map<String, dynamic>?> queryRecord(int id) async {
     Database db = await instance.database;
     List<Map<String, dynamic>> maps = await db.query(
       'health_records',
-      where: 'id = ?', // Corrected: Search by 'id'
+      where: 'id = ?',
       whereArgs: [id],
     );
     if (maps.isNotEmpty) {
@@ -148,10 +147,7 @@ class DatabaseHelper {
     );
   }
 
-  // ---------------------------------------------
   // --- CRUD OPERATIONS for users table ---
-  // (These remain unchanged)
-  // ---------------------------------------------
 
   // C - Create (Register a new user)
   Future<int> insertUser(Map<String, dynamic> row) async {
